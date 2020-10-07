@@ -1,39 +1,97 @@
-steps "Run a Script" {
+steps "Hello world (using PowerShell)" {
     condition = "Success"
     package_requirement = "LetOctopusDecide"
     start_trigger = "StartAfterPrevious"
 
-    actions "Run a Script" {
+    actions "Hello world (using PowerShell)" {
         action_type = "Octopus.Script"
         condition = "Success"
         is_disabled = false
-        is_required = false
+        is_required = true
 
         properties {
-            Octopus_Action_RunOnServer = "true"
             Octopus_Action_Script_ScriptSource = "Inline"
+            Octopus_Action_Script_ScriptBody = <<-EOT
+                    Write-Host 'Hello world, using PowerShell'
+                    
+                    #TODO: Experiment with steps of your own :)
+                    
+                    Write-Host '[Learn more about the types of steps available in Octopus](https://g.octopushq.com/OnboardingAddStepsLearnMore)'
+                EOT
             Octopus_Action_Script_Syntax = "PowerShell"
-            Octopus_Action_Script_ScriptBody = "echo Hello"
+            Octopus_Action_RunOnServer = "true"
         }
+    }
+
+    properties {
+        Octopus_Action_RunOnServer = "true"
     }
 }
 
-steps "Run a Script - clone (1)" {
+steps "Hello World (using C#)" {
+    condition = "Success"
+    package_requirement = "LetOctopusDecide"
+    start_trigger = "StartWithPrevious"
+
+    actions "Hello World (using C#)" {
+        action_type = "Octopus.Script"
+        condition = "Success"
+        is_disabled = false
+        is_required = true
+
+        properties {
+            Octopus_Action_Script_ScriptSource = "Inline"
+            Octopus_Action_Script_ScriptBody = <<-EOT
+                    Console.WriteLine("Hello world, using C#");
+                    
+                    //TODO: Experiment with steps of your own :)
+                    
+                    Console.WriteLine("[Learn more about the types of steps available in Octopus](https://g.octopushq.com/OnboardingAddStepsLearnMore)");
+                EOT
+            Octopus_Action_Script_Syntax = "CSharp"
+            Octopus_Action_RunOnServer = "true"
+        }
+    }
+
+    properties {
+        Octopus_Action_RunOnServer = "true"
+    }
+}
+
+steps "Deploy a Package" {
     condition = "Success"
     package_requirement = "LetOctopusDecide"
     start_trigger = "StartAfterPrevious"
 
-    actions "Run a Script - clone (1)" {
-        action_type = "Octopus.Script"
+    actions "Deploy a Package" {
+        action_type = "Octopus.TentaclePackage"
         condition = "Success"
         is_disabled = false
         is_required = false
+        worker_pool_variable = ""
+
+        packages {
+            acquisition_location = "Server"
+            feed_id_or_name = "feeds-builtin"
+            package_id = "myapp"
+
+            properties {
+                key = "SelectionMode"
+                value = "immediate"
+            }
+        }
 
         properties {
-            Octopus_Action_RunOnServer = "true"
-            Octopus_Action_Script_ScriptSource = "Inline"
-            Octopus_Action_Script_Syntax = "PowerShell"
-            Octopus_Action_Script_ScriptBody = "echo Hello"
+            Octopus_Action_Package_AutomaticallyRunConfigurationTransformationFiles = "True"
+            Octopus_Action_Package_AutomaticallyUpdateAppSettingsAndConnectionStrings = "True"
+            Octopus_Action_EnabledFeatures = ",Octopus.Features.ConfigurationTransforms,Octopus.Features.ConfigurationVariables"
+            Octopus_Action_Package_PackageId = "myapp"
+            Octopus_Action_Package_FeedId = "feeds-builtin"
+            Octopus_Action_Package_DownloadOnTentacle = "False"
         }
+    }
+
+    properties {
+        Octopus_Action_TargetRoles = "web"
     }
 }
